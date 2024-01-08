@@ -1,7 +1,7 @@
 ﻿using JobLists.Api.Models;
 using JobLists.Api.Services;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobLists.Api.Controllers
 {
@@ -17,15 +17,21 @@ namespace JobLists.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            return Ok(_dbContext.Jobs);
+            var jobs =await _dbContext.Jobs
+                .AsNoTracking()
+                .ToListAsync();
+
+            return Ok(jobs);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        public async Task<IActionResult> Get(Guid id)
         {
-            var job = _dbContext.Jobs.Find(id);
+            var job = await _dbContext.Jobs
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == id);
 
             if (job == null)
             {
@@ -47,7 +53,7 @@ namespace JobLists.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(Guid id, Job job)
         {
-            var jobToUpdate = _dbContext.Jobs.Find(id);
+            var jobToUpdate =await _dbContext.Jobs.SingleOrDefaultAsync(x => x.Id == id);
 
             if (jobToUpdate == null)
             {
@@ -63,7 +69,7 @@ namespace JobLists.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var jobToDelete = _dbContext.Jobs.Find(id);
+            var jobToDelete = await _dbContext.Jobs.SingleOrDefaultAsync(x => x.Id == id);
 
             if (jobToDelete == null)
             {
