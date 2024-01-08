@@ -36,16 +36,16 @@ namespace JobLists.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(Job job)
+        public async Task<IActionResult> Post(Job job)
         {
             _dbContext.Jobs.Add(job);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(Get), new { id = job.Id }, job);
         }
 
         [HttpPut]
-        public IActionResult Put(Guid id, Job job)
+        public async Task<IActionResult> Put(Guid id, Job job)
         {
             var jobToUpdate = _dbContext.Jobs.Find(id);
 
@@ -55,13 +55,13 @@ namespace JobLists.Api.Controllers
             }
 
             jobToUpdate.Update(job.Title, job.Description, job.Location, job.Salary);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var jobToDelete = _dbContext.Jobs.Find(id);
 
@@ -71,7 +71,7 @@ namespace JobLists.Api.Controllers
             }
 
             _dbContext.Jobs.Remove(jobToDelete);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return NoContent();
         }
